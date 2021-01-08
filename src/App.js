@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import InfoBox from './InfoBox';
 import './App.css';
-import { MenuItem, FormControl, Select, Card, CardContent, Table } from "@material-ui/core";
+import { MenuItem, FormControl, Select, Card, CardContent } from "@material-ui/core";
 import Map from "./Map";
+import Table from "./Table";
+import {sortData }from './util';
+import LineGraph from "./LineGraph";
 
 function App() {
   const [countries, setCountries] = useState([]);
@@ -21,7 +24,9 @@ function App() {
               value: country.countryInfo.iso2
             }
           ));
-          setTableData(data);
+
+          const sortedData = sortData(data);
+          setTableData(sortedData);
           setCountries(countries);
         });
       };
@@ -93,6 +98,7 @@ function App() {
     <Table countries={tableData}/>
     {/*Table*/}
     <h3>Worldwide New Cases</h3>
+    <LineGraph />
         {/*Graph*/}
   </CardContent>
 </Card>
