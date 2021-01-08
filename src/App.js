@@ -1,18 +1,17 @@
 import { useState, useEffect } from "react";
 import InfoBox from './InfoBox';
 import './App.css';
-import { MenuItem, FormControl, Select, Card, CardContent } from "@material-ui/core";
+import { MenuItem, FormControl, Select, Card, CardContent, Table } from "@material-ui/core";
 import Map from "./Map";
 
 function App() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState('worldwide');
   const [countryInfo, setCountryInfo] = useState({});
-
+  const [tableData, setTableData] = useState([]);
 
 
     useEffect(() => {
-
       const getCountriesData = async () => {
         await fetch("https://disease.sh/v3/covid-19/countries").then((response) => response.json())
         .then((data) => {
@@ -22,6 +21,7 @@ function App() {
               value: country.countryInfo.iso2
             }
           ));
+          setTableData(data);
           setCountries(countries);
         });
       };
@@ -43,6 +43,14 @@ function App() {
     };
 
     console.log("COUNTRY INFO >>>", countryInfo);
+
+    useEffect(() => {
+      fetch("https://disease.sh/v3/covid-19/all")
+      .then((response) => response.json())
+      .then((data) => {
+        setCountryInfo(data);
+      });
+    }, []);
 
   return (
     <div className="app">
@@ -67,11 +75,11 @@ function App() {
             </div>
             
             <div className="app__stats">
-              <InfoBox title="CoronaVirus cases" cases={12345} total={2000}/>
+              <InfoBox title="CoronaVirus cases" cases={countryInfo.todayCases} total={countryInfo.cases}/>
 
-              <InfoBox title="Recoveres" cases={123} total={3000} />
+              <InfoBox title="Recovered" cases={countryInfo.todayRecovered} total={countryInfo.recovered} />
 
-              <InfoBox title="Deaths" cases={1234} total={4000} />
+              <InfoBox title="Deaths" cases={countryInfo.todayDeaths} total={countryInfo.deaths} />
             </div>
             
             <Map />
@@ -82,6 +90,7 @@ function App() {
 
   <CardContent>
     <h3>Live Cases by Country</h3>
+    <Table countries={tableData}/>
     {/*Table*/}
     <h3>Worldwide New Cases</h3>
         {/*Graph*/}
