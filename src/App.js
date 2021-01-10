@@ -47,10 +47,17 @@ function App() {
       .then(data => {
         setCountry(countryCode);
         setCountryInfo(data);
+        
+
+        setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+      
+
+        setMapZoom(4);
+
+
+
       });
     };
-
-    console.log("COUNTRY INFO >>>", countryInfo);
 
     useEffect(() => {
       fetch("https://disease.sh/v3/covid-19/all")
