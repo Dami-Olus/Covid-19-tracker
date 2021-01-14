@@ -10,11 +10,12 @@ import "leaflet/dist/leaflet.css";
 
 function App() {
   const [countries, setCountries] = useState([]);
-  const [country, setCountry] = useState('worldwide');
+  const [country, setInputCountry] = useState('worldwide');
   const [countryInfo, setCountryInfo] = useState({});
   const [tableData, setTableData] = useState([]);
-  const [mapCenter, setMapCenter] = useState({ lat: 34.80746, lng: -40.496});
+  const [mapCenter, setMapCenter] = useState([ 34.80746, -40.496]);
   const [mapZoom, setMapZoom] = useState(3);
+  const [mapCountries, setMapCountries] = useState([]);
 
 
     useEffect(() => {
@@ -30,6 +31,7 @@ function App() {
 
           const sortedData = sortData(data);
           setTableData(sortedData);
+          setMapCountries(data);
           setCountries(countries);
         });
       };
@@ -38,26 +40,22 @@ function App() {
 
     const onCountryChange = async (event) => {
       const countryCode = event.target.value;
-      setCountry(countryCode);
+      
 
       const url = countryCode === "worldwide" ? "https://disease.sh/v3/covid-19/all" : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
 
       await fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        setCountry(countryCode);
+      .then((response) => response.json())
+      .then((data) => {
+        setInputCountry(countryCode);
         setCountryInfo(data);
-        
-
         setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
-      
-
         setMapZoom(4);
-
-
-
       });
+      
     };
+    console.log(mapCenter);
+    console.log(mapZoom);
 
     useEffect(() => {
       fetch("https://disease.sh/v3/covid-19/all")
@@ -98,22 +96,22 @@ function App() {
             </div>
             
             <Map 
+            countries={mapCountries}
             center={mapCenter}
             zoom={mapZoom}
             />
-
+            
       </div>
 
 <Card className="app__right">
-
   <CardContent>
     <h3>Live Cases by Country</h3>
     <Table countries={tableData}/>
-    {/*Table*/}
     <h3>Worldwide New Cases</h3>
     <LineGraph />
   </CardContent>
 </Card>
+
     </div>
   );
 }
